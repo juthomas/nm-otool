@@ -7,6 +7,7 @@
 #include <mach-o/loader.h>
 #include <mach-o/nlist.h>
 
+void	print
 
 void	handle_64(char *ptr)
 {

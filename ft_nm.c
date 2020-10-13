@@ -6,8 +6,48 @@
 #include <sys/stat.h>
 #include <mach-o/loader.h>
 #include <mach-o/nlist.h>
+#include <mach-o/stab.h>
 
-void	print
+
+
+
+
+void	print_output(int nsyms, int symoff, int stroff, char *ptr)
+{
+	int	i;
+	char	*stringtable;
+	struct	nlist_64	*array;
+
+	array = (void*)ptr + symoff;
+	stringtable = (void*)ptr + stroff;
+
+	for (i = 0; i < nsyms; i++)
+	{
+		//printf("%016llx : n_sect=%x n_type=%x n_desc=%x : %s\n", array[i].n_value,array[i].n_sect, array[i].n_type, array[i].n_desc, stringtable + array[i].n_un.n_strx);
+		if ((array[i].n_type & N_TYPE) == N_UNDF)
+		{
+			printf("                 U %s\n", stringtable + array[i].n_un.n_strx);
+		}
+		else if ((array[i].n_type & N_TYPE) == N_SECT)
+		{
+			printf("%016llx T %x %s\n", array[i].n_value, array[i].n_sect,stringtable + array[i].n_un.n_strx);
+		}
+		else
+		{
+			printf("%016llx : n_sect=%x n_type=%x n_desc=%x : %s\n", array[i].n_value,array[i].n_sect, array[i].n_type, array[i].n_desc, stringtable + array[i].n_un.n_strx);
+		}
+	}
+
+}
+
+void	print_segment_command(char segname[16])
+{
+	for (int i = 0; i < 16; i++)
+	{
+		printf("->%c<-", segname[i]);
+	}
+
+}
 
 void	handle_64(char *ptr)
 {
@@ -16,18 +56,32 @@ void	handle_64(char *ptr)
 	struct	mach_header_64	*header;
 	struct	load_command	*lc;
 	struct	symtab_command	*sym;
+	struct	segment_command	*sem;
 
 	header = (struct mach_header_64*)ptr;
 	ncmds = header->ncmds;
 	lc = (void*)ptr + sizeof(*header);
+
+
+	printf("Sizeof load commands :%x\n", header->sizeofcmds);
 	for (i = 0; i < ncmds; i++)
 	{
+		printf("%x.:%x\n", lc->cmd, lc->cmdsize);
+		if (i == 3 || lc->cmd == LC_SEGMENT)
+		{
+			sem = (struct segment_command *)lc;
+			// print_segment_command(sem->segname);
+			printf("name:%x\n", sem->cmd);
+		
+		}
 		if (lc->cmd == LC_SYMTAB)
 		{
-			sym = (struct systab_command *)lc;
-			//print_output(sym->nsyms, sym->symoff, sym->stroff);
+			sym = (struct symtab_command *)lc;
+			//print_output(sym->nsyms, sym->symoff, sym->stroff, ptr);
+			printf(".");
 			break;
 		}
+
 		lc = (void*)lc + lc->cmdsize;
 	}
 

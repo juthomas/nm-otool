@@ -56,22 +56,23 @@ void	handle_64(char *ptr)
 	struct	mach_header_64	*header;
 	struct	load_command	*lc;
 	struct	symtab_command	*sym;
-	struct	segment_command	*sem;
+	struct	segment_command_64	*sem;
 
 	header = (struct mach_header_64*)ptr;
 	ncmds = header->ncmds;
-	lc = (void*)ptr + sizeof(*header);
+	lc = (void*)ptr + sizeof(struct mach_header_64);
 
 
 	printf("Sizeof load commands :%x\n", header->sizeofcmds);
 	for (i = 0; i < ncmds; i++)
 	{
-		printf("%x.:%x\n", lc->cmd, lc->cmdsize);
-		if (i == 3 || lc->cmd == LC_SEGMENT)
+		printf("lc->cmd:%x lc->cmdsize:%x\n", lc->cmd, lc->cmdsize);
+		if (lc->cmd == LC_SEGMENT)
 		{
-			sem = (struct segment_command *)lc;
-			// print_segment_command(sem->segname);
-			printf("name:%x\n", sem->cmd);
+			sem = (struct segment_command_64 *)lc;
+			print_segment_command(sem->segname);
+			//printf("\naddr:%llx", header->sizeofcmds);
+			//printf("\nsize:%llx\n", sem->vmsize);
 		
 		}
 		if (lc->cmd == LC_SYMTAB)

@@ -6,9 +6,9 @@ COLOR = \0033[1;35m
 SRC_PATH = ./src/
 OBJ_PATH = ./obj/
 LIB_PATH = ./lib/
-INC_PATH = ./include/ $(LIB_PATH)libft/includes/ $(LIB_PATH)glfw/include/ \
+INC_PATH = ./include/ $(LIB_PATH)libft/includes/
 
-GCC_FLGS = -g #-Werror -Wextra -Wall
+GCC_FLGS = # -g #-Werror -Wextra -Wall
 # GCC_LIBS = -lglfw3 -framework AppKit -framework OpenGL -framework IOKit -framework CoreVideo 
 
 SRC_NAME = main.c
@@ -18,7 +18,7 @@ LIB_NAME = libft
 
 SRC = $(addprefix $(SRC_PATH), $(SRC_NAME))
 OBJ = $(addprefix $(OBJ_PATH), $(OBJ_NAME))
-INC = $(addprefix -I,$(INC_PATH))
+INC = $(addprefix -I ,$(INC_PATH))
 LIB = $(addprefix -L$(LIB_PATH),$(LIB_NAME))
 
 all: $(NAME)
@@ -29,7 +29,8 @@ $(NAME): $(OBJ)
 	@make -C $(LIB_PATH)libft -j --no-print-directory
 	@echo "$(COLOR)Objects \033[100D\033[40C\0033[1;32m[Created]\0033[1;37m"
 	@# make -C $(LIB_PATH)libmat -j --no-print-directory
-	@$(CC) $(GCC_FLGS) $(LIB) -lft $(INC) $(OBJ) -o $(NAME)
+	@#Fix the line below
+	@$(CC) $(GCC_FLGS) $(LIB) -lft $(INC) $(OBJ) ./lib/libft/libft.a -o $(NAME) -no-pie
 	@echo "$(COLOR)$(NAME) \033[100D\033[40C\0033[1;32m[Created]\0033[1;37m"
 
 
@@ -76,4 +77,4 @@ coffee: all
 	@echo ""
 	@echo "\0033[1;32m\033[3CTake Your Coffee"
 	@echo "\0033[1;37m"
-	@./$(NAME)
+	@./$(NAME) $(NAME)

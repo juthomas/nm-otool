@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+#include <unistd.h>
 #define MH_MAGIC_64 ((0x7f << 0) + (0x45 << 8) + (0x4c << 16) + (0x46 << 24)) //custom linux magic shit
 
 #define offsetof(st, m) \
